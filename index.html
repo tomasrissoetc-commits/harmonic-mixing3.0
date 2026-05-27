@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Harmonic Mixing · Camelot Wheel</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <style>
+    :root{
+      --bg:#090d19; --panel:rgba(255,255,255,.08); --panel2:rgba(255,255,255,.12);
+      --text:#f8fbff; --muted:#aeb8ca; --line:rgba(255,255,255,.16);
+      --green:#09e66f; --cyan:#25d9ff; --yellow:#fff238; --pink:#ff5fb7;
+      --blue:#44b8ff; --orange:#ffba4d; --red:#ff617b; --purple:#bc79ff;
+      --shadow:0 20px 70px rgba(0,0,0,.35);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:
+      radial-gradient(circle at 15% 15%,rgba(37,217,255,.25),transparent 28%),
+      radial-gradient(circle at 85% 5%,rgba(255,95,183,.22),transparent 28%),
+      radial-gradient(circle at 50% 110%,rgba(9,230,111,.18),transparent 35%),
+      linear-gradient(135deg,#070a14,#111a32 50%,#08111d);
+    }
+    button,input,select{font:inherit}
+    button{border:0;cursor:pointer;color:inherit}
+    .app{max-width:1180px;margin:0 auto;padding:22px}
+    header{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .brand h1{margin:0;font-size:clamp(2rem,5vw,4.3rem);letter-spacing:-.06em;line-height:.94}
+    .brand p{margin:10px 0 0;color:var(--muted);font-weight:650}
+    .badge{padding:10px 14px;border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:999px;color:#dce9ff;font-weight:750;white-space:nowrap}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;background:rgba(255,255,255,.06);padding:8px;border-radius:999px;border:1px solid var(--line);position:sticky;top:10px;z-index:5;backdrop-filter:blur(14px)}
+    .tab-btn{padding:11px 15px;border-radius:999px;background:transparent;color:#cbd6e8;font-weight:800;transition:.18s}
+    .tab-btn:hover{background:rgba(255,255,255,.09)}
+    .tab-btn.active{background:linear-gradient(135deg,var(--cyan),var(--green));color:#06131b;box-shadow:0 8px 24px rgba(37,217,255,.22)}
+    .tab-content{display:none;animation:fade .2s ease}
+    .tab-content.active{display:block}
+    @keyframes fade{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .grid{display:grid;gap:18px}.grid.two{grid-template-columns:minmax(300px,1fr) minmax(300px,1fr)}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;backdrop-filter:blur(16px)}
+    h2,h3{margin:0 0 12px} h2{font-size:1.55rem} h3{font-size:1.1rem}.muted{color:var(--muted);line-height:1.6}.small{font-size:.92rem}
+    .keys{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.key-btn{min-height:56px;border-radius:16px;background:rgba(255,255,255,.1);border:1px solid var(--line);font-size:1.2rem;font-weight:900;transition:.18s}.key-btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.17)}.key-btn.selected{outline:3px solid var(--cyan);box-shadow:0 0 0 8px rgba(37,217,255,.13)}
+    .results{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.mix-card{padding:14px;border-radius:18px;background:rgba(0,0,0,.22);border:1px solid var(--line)}.mix-name{display:flex;justify-content:space-between;gap:10px;color:#cdd9ec;font-size:.85rem;font-weight:850}.mix-key{font-size:2.15rem;font-weight:1000;letter-spacing:-.04em;margin-top:4px}.pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:4px 9px;background:rgba(255,255,255,.12);font-size:.75rem}
+    .theory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.theory-item{padding:16px;border-radius:20px;background:rgba(0,0,0,.2);border:1px solid var(--line);line-height:1.55}.theory-item ul{padding-left:18px;margin-bottom:0}.note{padding:16px;border-radius:18px;background:linear-gradient(135deg,rgba(37,217,255,.16),rgba(9,230,111,.14));border:1px solid rgba(255,255,255,.18);line-height:1.55}
+    .rules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.rule{padding:14px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.08)}.rule strong{display:block;margin-bottom:4px}
+    .quiz-options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:18px 0}.option{padding:18px;border-radius:18px;background:rgba(255,255,255,.1);border:1px solid var(--line);font-size:1.35rem;font-weight:900}.option.correct{background:rgba(9,230,111,.35)}.option.wrong{background:rgba(255,97,123,.35)}.action{padding:12px 16px;border-radius:14px;background:linear-gradient(135deg,var(--cyan),var(--green));color:#051118;font-weight:950}.ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid var(--line)}
+    .wheel-wrap{display:grid;grid-template-columns:minmax(300px,620px) 1fr;gap:18px;align-items:center}.wheel{width:100%;max-width:620px;aspect-ratio:1;position:relative;margin:auto;border-radius:50%;filter:drop-shadow(0 30px 55px rgba(0,0,0,.38))}.wheel svg{width:100%;height:100%;display:block}.wheel-sector{stroke:rgba(8,13,25,.55);stroke-width:1.6;cursor:pointer;transition:.16s;opacity:.9}.wheel-sector:hover{filter:brightness(1.15);opacity:1}.wheel-sector.selected{stroke:#fff;stroke-width:4;filter:brightness(1.18)}.wheel-sector.compatible{stroke:#fff;stroke-width:2.6;filter:brightness(1.08)}.wheel-text{pointer-events:none;font-weight:1000;font-size:15px;fill:#06111f;text-anchor:middle;dominant-baseline:middle}.wheel-text.outer{fill:#f8fbff;text-shadow:0 2px 8px rgba(0,0,0,.6)}.wheel-subtext{pointer-events:none;font-weight:800;font-size:7px;fill:rgba(6,17,31,.7);text-anchor:middle;dominant-baseline:middle}.wheel-subtext.outer{fill:rgba(248,251,255,.72)}.wheel-center{position:absolute;inset:36%;border-radius:50%;background:#10182b;border:2px solid rgba(255,255,255,.35);display:grid;place-items:center;text-align:center;padding:14px;font-weight:950;box-shadow:inset 0 0 30px rgba(0,0,0,.35)}
+    .legend{display:flex;gap:8px;flex-wrap:wrap}.legend span{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid var(--line);font-size:.86rem}
+    table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:18px}th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.12);text-align:center}th{position:sticky;top:66px;background:#17223e;z-index:2}tr:nth-child(even){background:rgba(255,255,255,.045)}
+    footer{margin:22px 0;color:var(--muted);font-size:.88rem;text-align:center}
+    @media(max-width:850px){header{display:block}.badge{display:inline-flex;margin-top:12px}.grid.two,.theory-grid,.rules,.wheel-wrap{grid-template-columns:1fr}.results{grid-template-columns:1fr}.keys{grid-template-columns:repeat(4,1fr)}.tabs{border-radius:22px}.tab-btn{flex:1}th{top:92px}.table-scroll{overflow:auto}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <h1>Harmonic<br>Mixing</h1>
+        <p>DJ.Studio · Camelot Wheel · guía interactiva</p>
+      </div>
+      <div class="badge">Reglas corregidas + teoría</div>
+    </header>
+
+    <nav class="tabs" aria-label="Secciones">
+      <button class="tab-btn active" data-tab="explore">🎧 Explorar mezclas</button>
+      <button class="tab-btn" data-tab="theory">📚 Teoría</button>
+      <button class="tab-btn" data-tab="rules">⚡ Reglas rápidas</button>
+      <button class="tab-btn" data-tab="practice">🧠 Práctica</button>
+      <button class="tab-btn" data-tab="wheel">⭕ Rueda Camelot</button>
+      <button class="tab-btn" data-tab="table">📋 Tabla</button>
+    </nav>
+
+    <main style="margin-top:18px">
+      <section id="explore" class="tab-content active">
+        <div class="grid two">
+          <div class="card">
+            <h2>Elegí una clave</h2>
+            <p class="muted small">A = menor. B = mayor. Tocá una key para ver transiciones compatibles y efectos especiales.</p>
+            <h3>Claves A (menor)</h3><div id="keysA" class="keys"></div>
+            <h3 style="margin-top:18px">Claves B (mayor)</h3><div id="keysB" class="keys"></div>
+          </div>
+          <div class="card">
+            <h2 id="selectedTitle">← Selecciona una clave</h2>
+            <p class="muted" id="selectedDesc">Toca una clave para ver sus mezclas compatibles.</p>
+            <div id="results" class="results"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="theory" class="tab-content">
+        <div class="card">
+          <h2>📚 Teoría de la mezcla armónica</h2>
+          <p class="muted">La mezcla armónica consiste en mezclar canciones que estén en el mismo tono o en tonos compatibles, evitando choques bruscos entre melodías, bajos y acordes.</p>
+          <div class="theory-grid">
+            <article class="theory-item"><h3>🎼 Tono fundamental</h3><p>Cada track tiene una tonalidad principal: Do, Re, Mi, Fa, Sol, La o Si. En la notación Camelot se simplifica con números del 1 al 12 y letras: <strong>A</strong> para menor y <strong>B</strong> para mayor.</p></article>
+            <article class="theory-item"><h3>🎧 Para qué sirve</h3><p>Sirve para lograr sesiones más claras, fluidas y profesionales. Además de BPM y energía, elegís canciones que musicalmente se entienden entre sí.</p></article>
+            <article class="theory-item"><h3>⭕ Cómo usar la rueda</h3><p>Las mezclas más suaves suelen estar en la misma key, en las keys vecinas o en el cambio relativo A/B. Los saltos especiales sirven para mover la energía o cambiar el mood del set.</p></article>
+            <article class="theory-item"><h3>🔥 Transiciones</h3><ul><li><strong>Suave:</strong> Perfect, -1, +1, Scale Change.</li><li><strong>Más energía:</strong> Energy Boost, Diagonal, Jaws.</li><li><strong>Cambio emocional:</strong> Mood Shifter.</li></ul></article>
+          </div>
+          <div class="note" style="margin-top:16px"><strong>Resumen rápido:</strong> para sonar prolijo, movete cerca en la rueda. Para levantar o cambiar la vibra, usá los saltos especiales, pero con más cuidado y escuchando si el bajo/melodía combinan.</div>
+        </div>
+      </section>
+
+      <section id="rules" class="tab-content">
+        <div class="card"><h2>⚡ Reglas corregidas</h2><div class="rules" id="rulesGrid"></div></div>
+      </section>
+
+      <section id="practice" class="tab-content">
+        <div class="card">
+          <h2>🧠 Quiz de Camelot</h2>
+          <p class="muted">Practicá las reglas hasta que salgan automático.</p>
+          <h3 id="question">Pregunta</h3>
+          <div id="quizOptions" class="quiz-options"></div>
+          <button id="nextQuestion" class="action">Siguiente →</button>
+          <button id="resetScore" class="action ghost">Reiniciar score</button>
+          <p id="score" class="muted">Score: 0/0</p>
+        </div>
+      </section>
+
+      <section id="wheel" class="tab-content">
+        <div class="wheel-wrap">
+          <div class="card"><div class="wheel" id="wheel"><div class="wheel-center" id="wheelCenter">Tocá una key</div></div></div>
+          <div class="card"><h2>⭕ Rueda interactiva</h2><p class="muted">Tocá una clave en la rueda para resaltar sus transiciones. Exterior = B mayor, interior = A menor.</p><div class="legend" id="legend"></div><div id="wheelDetails" class="results" style="margin-top:16px"></div></div>
+        </div>
+      </section>
+
+      <section id="table" class="tab-content">
+        <div class="card"><h2>📋 Tabla completa</h2><p class="muted">Todas las combinaciones calculadas con las reglas corregidas.</p><div class="table-scroll"><table id="mixTable"></table></div></div>
+      </section>
+    </main>
+    <footer>Hecho para practicar Camelot Wheel · abrí index.html o subilo directo a GitHub Pages.</footer>
+  </div>
+
+  <script>
+    const keys = [...Array(12)].map((_, i) => i + 1);
+    const keyList = [...keys.map(n => `${n}A`), ...keys.map(n => `${n}B`)];
+    const mixLabels = {
+      perfect: ['Perfect Mix', 'misma key'], minusOne: ['–1 Mix', '-1 misma letra'], plusOne: ['+1 Mix', '+1 misma letra'],
+      energyBoost: ['Energy Boost', '+2 misma letra'], scaleChange: ['Scale Change', 'mismo número, cambia A/B'],
+      diagonalMix: ['Diagonal Mix', 'A:-1→B / B:+1→A'], jawsMix: ['Jaws Mix', '+7 misma letra'], moodShifter: ['Mood Shifter', 'A:+3→B / B:-3→A']
+    };
+    const ruleText = [
+      ['Perfect Mix', 'Misma clave. Ej: 8A → 8A.'], ['–1 Mix', 'Número -1, misma letra. Ej: 8A → 7A.'], ['+1 Mix', 'Número +1, misma letra. Ej: 8A → 9A.'],
+      ['Energy Boost', 'Número +2, misma letra. Ej: 8A → 10A.'], ['Scale Change', 'Mismo número, cambia A/B. Ej: 8A → 8B.'], ['Diagonal Mix', 'Si es A: -1 y B. Si es B: +1 y A.'],
+      ['Jaws Mix', 'Número +7, misma letra. Ej: 8A → 3A.'], ['Mood Shifter', 'Si es A: +3 y B. Si es B: -3 y A.']
+    ];
+    let selectedKey = null; let score = 0; let total = 0; let currentAnswer = null;
+    function wrap(n){ return ((n - 1 + 12) % 12) + 1; }
+    function getMixes(key){ const n=parseInt(key); const l=key.endsWith('A')?'A':'B'; const other=l==='A'?'B':'A'; return {
+      perfect:`${n}${l}`, minusOne:`${wrap(n-1)}${l}`, plusOne:`${wrap(n+1)}${l}`, energyBoost:`${wrap(n+2)}${l}`,
+      scaleChange:`${n}${other}`, diagonalMix:l==='A'?`${wrap(n-1)}B`:`${wrap(n+1)}A`, jawsMix:`${wrap(n+7)}${l}`, moodShifter:l==='A'?`${wrap(n+3)}B`:`${wrap(n-3)}A`
+    };}
+    function setTab(id){ document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===id)); document.querySelectorAll('.tab-content').forEach(s=>s.classList.toggle('active',s.id===id)); }
+    document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>setTab(btn.dataset.tab)));
+    function makeKeyButtons(){ ['A','B'].forEach(letter=>{ const el=document.getElementById(`keys${letter}`); keys.forEach(n=>{ const b=document.createElement('button'); b.className='key-btn'; b.textContent=`${n}${letter}`; b.onclick=()=>selectKey(`${n}${letter}`); el.appendChild(b); }); }); }
+    function renderMixCards(container, key){ const mixes=getMixes(key); container.innerHTML=Object.entries(mixes).map(([id,val])=>`<div class="mix-card"><div class="mix-name"><span>${mixLabels[id][0]}</span><span class="pill">${mixLabels[id][1]}</span></div><div class="mix-key">${val}</div></div>`).join(''); }
+    function selectKey(key){ selectedKey=key; document.querySelectorAll('.key-btn').forEach(b=>b.classList.toggle('selected',b.textContent===key)); document.getElementById('selectedTitle').textContent=`${key} → mezclas compatibles`; document.getElementById('selectedDesc').textContent='Reglas corregidas según la tabla de referencia.'; renderMixCards(document.getElementById('results'),key); renderMixCards(document.getElementById('wheelDetails'),key); document.getElementById('wheelCenter').innerHTML=`<div>${key}</div><small style="color:#aeb8ca">seleccionada</small>`; highlightWheel(key); }
+    function renderRules(){ document.getElementById('rulesGrid').innerHTML=ruleText.map(([a,b])=>`<div class="rule"><strong>${a}</strong><span class="muted small">${b}</span></div>`).join(''); }
+    function renderTable(){ const heads=['Starting Key',...Object.values(mixLabels).map(v=>v[0])]; let html='<thead><tr>'+heads.map(h=>`<th>${h}</th>`).join('')+'</tr></thead><tbody>'; keyList.forEach(k=>{ const m=getMixes(k); html+='<tr><td><strong>'+k+'</strong></td>'+Object.keys(mixLabels).map(id=>`<td>${m[id]}</td>`).join('')+'</tr>'; }); html+='</tbody>'; document.getElementById('mixTable').innerHTML=html; }
+    const camelotNotes = {
+      '1A':'A♭ Minor','2A':'E♭ Minor','3A':'B♭ Minor','4A':'F Minor','5A':'C Minor','6A':'G Minor','7A':'D Minor','8A':'A Minor','9A':'E Minor','10A':'B Minor','11A':'F♯ Minor','12A':'D♭ Minor',
+      '1B':'B Major','2B':'F♯ Major','3B':'D♭ Major','4B':'A♭ Major','5B':'E♭ Major','6B':'B♭ Major','7B':'F Major','8B':'C Major','9B':'G Major','10B':'D Major','11B':'A Major','12B':'E Major'
+    };
+    function polar(cx, cy, r, angle){ const rad=(angle-90)*Math.PI/180; return {x:cx+r*Math.cos(rad), y:cy+r*Math.sin(rad)}; }
+    function ringPath(cx,cy,r1,r2,a1,a2){ const p1=polar(cx,cy,r2,a1), p2=polar(cx,cy,r2,a2), p3=polar(cx,cy,r1,a2), p4=polar(cx,cy,r1,a1); const large=a2-a1>180?1:0; return `M ${p1.x} ${p1.y} A ${r2} ${r2} 0 ${large} 1 ${p2.x} ${p2.y} L ${p3.x} ${p3.y} A ${r1} ${r1} 0 ${large} 0 ${p4.x} ${p4.y} Z`; }
+    function addSvgText(svg, text, x, y, cls){ const t=document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x',x); t.setAttribute('y',y); t.setAttribute('class',cls); t.textContent=text; svg.appendChild(t); return t; }
+    function renderWheel(){
+      const wheel=document.getElementById('wheel');
+      const center=wheel.querySelector('.wheel-center');
+      wheel.innerHTML='';
+      const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 500 500');
+      svg.setAttribute('role','img');
+      svg.setAttribute('aria-label','Rueda Camelot interactiva');
+      wheel.appendChild(svg);
+      const outerR=240, midR=165, innerR=92, cx=250, cy=250;
+      keys.forEach((n,i)=>{
+        const start=i*30-15, end=i*30+15, hue=i*30;
+        [['B',midR,outerR,`hsl(${hue},88%,58%)`,'outer'],['A',innerR,midR,`hsl(${hue+12},92%,72%)`,'inner']].forEach(([letter,r1,r2,color,zone])=>{
+          const key=`${n}${letter}`;
+          const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+          path.setAttribute('d',ringPath(cx,cy,r1,r2,start,end));
+          path.setAttribute('fill',color);
+          path.setAttribute('class','wheel-sector');
+          path.dataset.key=key;
+          path.addEventListener('click',()=>selectKey(key));
+          svg.appendChild(path);
+          const angle=i*30, labelR=(r1+r2)/2;
+          const pos=polar(cx,cy,labelR,angle);
+          addSvgText(svg,key,pos.x,pos.y-5,`wheel-text ${zone}`);
+          addSvgText(svg,camelotNotes[key].replace(' Major','').replace(' Minor','m'),pos.x,pos.y+12,`wheel-subtext ${zone}`);
+        });
+      });
+      wheel.appendChild(center);
+      document.getElementById('legend').innerHTML=Object.values(mixLabels).map(v=>`<span>${v[0]}</span>`).join('');
+    }
+    function highlightWheel(key){
+      document.querySelectorAll('.wheel-sector').forEach(s=>s.classList.remove('selected','compatible'));
+      if(!key)return;
+      const values=new Set(Object.values(getMixes(key)));
+      document.querySelectorAll('.wheel-sector').forEach(s=>{
+        if(s.dataset.key===key) s.classList.add('selected');
+        else if(values.has(s.dataset.key)) s.classList.add('compatible');
+      });
+    }
+    function newQuestion(){ const start=keyList[Math.floor(Math.random()*keyList.length)]; const ids=Object.keys(mixLabels).filter(x=>x!=='perfect'); const id=ids[Math.floor(Math.random()*ids.length)]; const answer=getMixes(start)[id]; currentAnswer=answer; document.getElementById('question').textContent=`Si estás en ${start}, ¿cuál es ${mixLabels[id][0]}?`; const opts=new Set([answer]); while(opts.size<4) opts.add(keyList[Math.floor(Math.random()*keyList.length)]); const arr=[...opts].sort(()=>Math.random()-.5); document.getElementById('quizOptions').innerHTML=arr.map(o=>`<button class="option">${o}</button>`).join(''); document.querySelectorAll('.option').forEach(b=>b.onclick=()=>answerQuiz(b)); }
+    function answerQuiz(btn){ if(btn.classList.contains('correct')||btn.classList.contains('wrong'))return; total++; const ok=btn.textContent===currentAnswer; if(ok)score++; btn.classList.add(ok?'correct':'wrong'); document.querySelectorAll('.option').forEach(b=>{ if(b.textContent===currentAnswer)b.classList.add('correct'); b.disabled=true; }); document.getElementById('score').textContent=`Score: ${score}/${total}`; }
+    document.getElementById('nextQuestion').onclick=newQuestion; document.getElementById('resetScore').onclick=()=>{score=0;total=0;document.getElementById('score').textContent='Score: 0/0';newQuestion();};
+    if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{})); }
+    makeKeyButtons(); renderRules(); renderTable(); renderWheel(); newQuestion(); selectKey('1A');
+  </script>
+</body>
+</html>
