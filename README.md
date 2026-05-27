@@ -1,11 +1,8 @@
 # Harmonic Mixing · Camelot Wheel
 
-App interactiva para practicar mezcla armónica con Camelot Wheel.
+Versión corregida con rueda Camelot interactiva, teoría, quiz, tabla y reglas corregidas:
 
-Incluye:
-- Rueda SVG clickeable.
-- Resaltado de claves compatibles.
-- Reglas corregidas.
-- Teoría resumida.
-- Quiz de práctica.
-- Tabla completa.
+- Energy Boost = +2 misma letra
+- Diagonal Mix = A: -1 y B / B: +1 y A
+- Jaws Mix = +7 misma letra
+- Mood Shifter = A: +3 y B / B: -3 y A
